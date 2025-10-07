@@ -1,0 +1,80 @@
+package com.happyfeet.controller;
+
+import com.happyfeet.model.Factura;
+import com.happyfeet.repository.FacturaDAO;
+
+import java.util.List;
+import java.util.Scanner;
+
+public class FacturaController {
+
+    private static final FacturaDAO facturaDAO = new FacturaDAO();
+    private static final Scanner scanner = new Scanner(System.in);
+
+    // Registrar factura
+    public static void registrarFactura() {
+        System.out.println("===== Registrar Factura =====");
+        System.out.print("Número de factura: ");
+        String numero = scanner.nextLine();
+        System.out.print("Descripción: ");
+        String descripcion = scanner.nextLine();
+        System.out.print("Método de pago: ");
+        String metodoPago = scanner.nextLine();
+        System.out.print("Total: ");
+        double total = Double.parseDouble(scanner.nextLine());
+        System.out.print("ID del dueño: ");
+        int duenoId = Integer.parseInt(scanner.nextLine());
+
+        Factura factura = new Factura(numero, descripcion, metodoPago, total);
+        factura.setDuenoId(duenoId);
+
+        facturaDAO.agregarFactura(factura);
+        System.out.println("Factura registrada correctamente.");
+    }
+
+    // Mostrar todas las facturas
+    public static void mostrarFacturas() {
+        System.out.println("===== Lista de Facturas =====");
+        List<Factura> facturas = facturaDAO.getFacturas();
+        if (facturas.isEmpty()) {
+            System.out.println("No hay facturas registradas.");
+            return;
+        }
+
+        for (int i = 0; i < facturas.size(); i++) {
+            Factura f = facturas.get(i);
+            System.out.println((i + 1) + ". ID: " + f.getId() +
+                    ", Dueño ID: " + f.getDuenoId() +
+                    ", Número: " + f.getNumero() +
+                    ", Fecha: " + f.getFechaEmision() +
+                    ", Total: $" + f.getTotal());
+        }
+    }
+
+    // Editar factura
+    public static void editarFactura() {
+        mostrarFacturas();
+        System.out.print("Seleccione el número de la factura a editar: ");
+        int index = Integer.parseInt(scanner.nextLine()) - 1;
+
+        System.out.print("Nueva descripción: ");
+        String descripcion = scanner.nextLine();
+        System.out.print("Nuevo método de pago: ");
+        String metodoPago = scanner.nextLine();
+        System.out.print("Nuevo total: ");
+        double total = Double.parseDouble(scanner.nextLine());
+
+        Factura factura = new Factura("", descripcion, metodoPago, total);
+        facturaDAO.editarFactura(index, factura);
+        System.out.println("Factura editada correctamente.");
+    }
+
+    // Eliminar factura
+    public static void eliminarFactura() {
+        mostrarFacturas();
+        System.out.print("Seleccione el número de la factura a eliminar: ");
+        int index = Integer.parseInt(scanner.nextLine()) - 1;
+        facturaDAO.eliminarFactura(index);
+        System.out.println("Factura eliminada correctamente.");
+    }
+}
